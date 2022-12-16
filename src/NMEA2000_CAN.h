@@ -195,6 +195,7 @@ other related libraries. See origin for MBED port on <https://github.com/thomaso
 - Remember also install [Teensyduino](https://www.pjrc.com/teensy/td_download.html) !
  */
 #define USE_N2K_TEENSYX_CAN 8
+#define USE_N2K_STM32_CAN 9
 
 /*********************************************************************//**
  * \brief Use the Official Arduino CAN Library
@@ -239,6 +240,8 @@ other related libraries. See origin for MBED port on <https://github.com/thomaso
 #define USE_N2K_CAN USE_N2K_TEENSYX_CAN
 #elif defined(ARDUINO_UNOWIFIR4) || defined(ARDUINO_MINIMA)
 #define USE_N2K_CAN USE_N2K_ARDUINO_CAN
+#elif defined(STM32F1xx_HAL_CAN_H)
+#define USE_N2K_CAN USE_N2K_STM32_CAN
 #else
 #define USE_N2K_CAN USE_N2K_MCP_CAN
 #endif
@@ -321,6 +324,9 @@ tNMEA2000 &NMEA2000=*(new tNMEA2000_ArduinoCAN());
 #endif
 
 tNMEA2000 &NMEA2000 = *(new tNMEA2000_pico(N2k_SPI_CS_PIN, N2k_CAN_INT_PIN));
+#elif USE_N2K_CAN == USE_N2K_STM32_CAN
+#include <NMEA2000_STM32.h>       //https://github.com/BitterAndReal/NMEA2000_STM32
+tNMEA2000 &NMEA2000=*(new tNMEA2000_STM32());
 
 #else  // Use USE_N2K_MCP_CAN
 // Use mcp_can library e.g. with Arduino Mega and external MCP2551 CAN bus chip
@@ -329,9 +335,6 @@ tNMEA2000 &NMEA2000 = *(new tNMEA2000_pico(N2k_SPI_CS_PIN, N2k_CAN_INT_PIN));
 // That works also with Maple mini and 8 MHz clock. Hopefully these improvements will be applied to
 // original library
 
-#if defined(__STM32F1__) // Maple
-#include <MapleIntCompatibility.h>
-#endif
 
 #include <SPI.h>
 #include <mcp_can.h> // https://github.com/ttlappalainen/CAN_BUS_Shield
