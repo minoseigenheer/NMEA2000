@@ -32,13 +32,20 @@ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // #define DebugStream Serial   // outputs debug messages to the serial console (only for Arduino)
 #define DebugStream (*ForwardStream) // outputs debug messages to same destination as ForwardStream
 
-// #define NMEA2000_FRAME_ERROR_DEBUG
+ //#define NMEA2000_FRAME_ERROR_DEBUG
 // #define NMEA2000_FRAME_IN_DEBUG
 // #define NMEA2000_FRAME_OUT_DEBUG
 // #define NMEA2000_MSG_TX_DEBUG
 // #define NMEA2000_MSG_RX_DEBUG  // This one spams the console with every parsed message
 // #define NMEA2000_BUF_DEBUG
 // #define NMEA2000_DEBUG
+
+#if defined(ARDUINO)
+#define DebugStream Serial
+#elif defined(STM32) && (defined(NMEA2000_FRAME_ERROR_DEBUG) || defined(NMEA2000_FRAME_IN_DEBUG) || defined(NMEA2000_FRAME_OUT_DEBUG) || defined(NMEA2000_MSG_DEBUG) || defined(NMEA2000_BUF_DEBUG) || defined(NMEA2000_DEBUG))
+#include "N2kStream_STM32.hpp"
+N2kStream_STM32 DebugStream; // create N2kStream_STM32 instance as STM32 DebugStream class
+#endif
 
 #if defined(NMEA2000_FRAME_ERROR_DEBUG)
 # define N2kFrameErrDbgStart(fmt, args...) DebugStream.print(N2kMillis()); DebugStream.print(": "); DebugStream.print (fmt , ## args)
